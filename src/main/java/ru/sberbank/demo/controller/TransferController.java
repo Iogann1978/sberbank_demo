@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.sberbank.demo.error.InsufficientFunds;
-import ru.sberbank.demo.error.NegativeSum;
 import ru.sberbank.demo.model.TransferRequest;
 import ru.sberbank.demo.service.TransferService;
 import ru.sberbank.demo.service.UserService;
 
 @RestController
-@RequestMapping("tramsfer")
+@RequestMapping("transfer")
 @Slf4j
 public class TransferController {
     private UserService userService;

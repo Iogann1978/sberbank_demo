@@ -1,21 +1,57 @@
 package ru.sberbank.demo.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.sberbank.demo.error.InsufficientFunds;
 import ru.sberbank.demo.error.NegativeSum;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
-public interface Account {
-    Long getId();
-    void setId(Long id);
-    BigDecimal getAmount();
-    void setAmount(BigDecimal amount);
-    String getName();
-    void setName(String name);
-    String getNumber();
-    void setNumber(String number);
-    AccountType getType();
-    void setType(AccountType type);
-    BigDecimal transferTo(BigDecimal sum) throws NegativeSum;
-    BigDecimal transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum;
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Account {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Size(min = 20, max = 20)
+    private String number;
+    private String name;
+    @PositiveOrZero
+    private BigDecimal amount;
+    @NotNull
+    private AccountType type;
+    @ManyToOne
+    @JoinColumn(name = "ACCOUNT_ID")
+    private User user;
+
+    public BigDecimal transferTo(BigDecimal sum) throws NegativeSum {
+        checkSum(sum);
+        amount.add(sum);
+        return amount;
+    }
+
+    public BigDecimal transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum {
+        checkSum(sum);
+        if(amount.compareTo(sum) == -1) {
+            throw new InsufficientFunds();
+        }
+        amount.subtract(sum);
+        return amount;
+    }
+
+    private static void checkSum(BigDecimal sum) throws NegativeSum {
+        if(sum.compareTo(BigDecimal.ZERO) == 0 || sum.compareTo(BigDecimal.ZERO) == -1) {
+            throw new NegativeSum();
+        }
+    }
 }
