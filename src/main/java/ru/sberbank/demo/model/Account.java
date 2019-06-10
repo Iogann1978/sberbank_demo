@@ -34,20 +34,21 @@ public class Account {
     @EqualsAndHashCode.Exclude
     private User user;
 
-    public BigDecimal transferTo(BigDecimal sum) throws NegativeSum {
+    public synchronized void transferTo(BigDecimal sum) throws NegativeSum {
         checkSum(sum);
-        amount.add(sum);
-        return amount;
+        log.info("add amount: {}, sum: {}", amount, sum);
+        amount = amount.add(sum);
+        log.info("add amount: {}", amount);
     }
 
-    public BigDecimal transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum {
+    public synchronized void transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum {
         checkSum(sum);
-        log.info("amount: {}, sum: {}", amount, sum);
+        log.info("subtract amount: {}, sum: {}", amount, sum);
         if(amount.compareTo(sum) == -1) {
             throw new InsufficientFunds();
         }
-        amount.subtract(sum);
-        return amount;
+        amount = amount.subtract(sum);
+        log.info("subtract amount: {}", amount);
     }
 
     private static void checkSum(BigDecimal sum) throws NegativeSum {

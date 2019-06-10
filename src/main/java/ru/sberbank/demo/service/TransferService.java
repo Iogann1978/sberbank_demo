@@ -1,9 +1,9 @@
 package ru.sberbank.demo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sberbank.demo.error.InsufficientFunds;
 import ru.sberbank.demo.error.NegativeSum;
@@ -15,6 +15,7 @@ import ru.sberbank.demo.repository.DocumentRepository;
 import java.math.BigDecimal;
 
 @Service
+@Slf4j
 public class TransferService {
     private DocumentRepository documentRepository;
     private AccountRepository accountRepository;
@@ -25,7 +26,7 @@ public class TransferService {
         this.documentRepository = documentRepository;
     }
 
-    @Transactional(rollbackFor = {InsufficientFunds.class, NegativeSum.class}, isolation = Isolation.SERIALIZABLE )
+    @Transactional(rollbackFor = {InsufficientFunds.class, NegativeSum.class})
     public void transfer(Account a, Account b, BigDecimal sum) throws InsufficientFunds, NegativeSum {
         val doc = Document.builder()
                 .from(a)
@@ -35,8 +36,9 @@ public class TransferService {
                 .build();
         a.transferFrom(sum);
         b.transferTo(sum);
-        accountRepository.save(a);
-        accountRepository.save(b);
+        val as = accountRepository.save(a);
+        val bs = accountRepository.save(b);
+        log.info("as: {}, bs: {}", as.getId(), bs.getId());
         documentRepository.save(doc);
     }
 }
