@@ -70,9 +70,13 @@ public class DemoApplicationTests {
                 .build();
         testUser = userRepository.save(user);
         accounts.stream().forEach(account -> account.setUser(testUser));
-        val testAccounts = accountRepository.saveAll(accounts);
-        testAccountFrom = testAccounts.get(0);
-        testAccountTo = testAccounts.get(1);
+        accountRepository.saveAll(accounts).stream().forEach(account -> {
+            if(account.getAmount().equals(BigDecimal.ZERO)) {
+                testAccountTo = account;
+            } else {
+                testAccountFrom = account;
+            }
+        });
     }
 
     @Test
@@ -90,12 +94,18 @@ public class DemoApplicationTests {
                 .password("12345")
                 .build();
         taskService.transferTask(request, testUser.getId());
+        //taskService.transferTask(request, testUser.getId());
+        //taskService.transferTask(request, testUser.getId());
         try {
             TimeUnit.SECONDS.sleep(3L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        log.info("from: {}", testAccountFrom.getAmount());
-        log.info("to: {}", testAccountTo.getAmount());
+        val accountFrom = accountRepository.getOne(testAccountFrom.getId());
+        val accountTo = accountRepository.getOne(testAccountTo.getId());
+        assertNotNull(accountFrom);
+        assertNotNull(accountTo);
+        log.info("from: {}", accountFrom.getAmount());
+        log.info("to: {}", accountTo.getAmount());
     }
 }
