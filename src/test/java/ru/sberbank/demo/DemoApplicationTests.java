@@ -23,6 +23,7 @@ import ru.sberbank.demo.service.UserService;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -86,7 +87,15 @@ public class DemoApplicationTests {
                 .form(testAccountFrom.getNumber())
                 .to(testAccountTo.getNumber())
                 .sum(new BigDecimal(500.0))
+                .password("12345")
                 .build();
         taskService.transferTask(request, testUser.getId());
+        try {
+            TimeUnit.SECONDS.sleep(3L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        log.info("from: {}", testAccountFrom.getAmount());
+        log.info("to: {}", testAccountTo.getAmount());
     }
 }

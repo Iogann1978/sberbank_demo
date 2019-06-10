@@ -33,6 +33,4 @@ public class Document {
     private BigDecimal sum;
     @CreationTimestamp
     private Date timestamp;
-    @NotNull
-    private String text;
 }

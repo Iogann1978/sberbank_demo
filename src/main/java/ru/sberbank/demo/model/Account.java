@@ -1,6 +1,7 @@
 package ru.sberbank.demo.model;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import ru.sberbank.demo.error.InsufficientFunds;
 import ru.sberbank.demo.error.NegativeSum;
 
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,6 +42,7 @@ public class Account {
 
     public BigDecimal transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum {
         checkSum(sum);
+        log.info("amount: {}, sum: {}", amount, sum);
         if(amount.compareTo(sum) == -1) {
             throw new InsufficientFunds();
         }

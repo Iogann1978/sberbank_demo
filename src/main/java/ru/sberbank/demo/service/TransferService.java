@@ -30,6 +30,7 @@ public class TransferService {
                 .from(a)
                 .to(b)
                 .sum(sum)
+                .user(a.getUser())
                 .build();
         a.transferFrom(sum);
         b.transferTo(sum);
