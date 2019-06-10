@@ -1,37 +1,22 @@
 package ru.sberbank.demo.controller;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.sberbank.demo.model.TransferRequest;
-import ru.sberbank.demo.service.TransferService;
-import ru.sberbank.demo.service.UserService;
+import ru.sberbank.demo.service.TaskService;
 
 @RestController
 @RequestMapping("transfer")
-@Slf4j
 public class TransferController {
-    private UserService userService;
-    private TransferService transferService;
+    private TaskService taskService;
 
     @Autowired
-    public TransferController(UserService userService, TransferService transferService) {
-        this.userService = userService;
-        this.transferService = transferService;
+    public TransferController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    @SneakyThrows
     @PostMapping("/simple/{userId}")
     public void transfer(@RequestBody TransferRequest request, @PathVariable Long userId) {
-        val user = userService.login(userId, request.getPassword());
-        if( user != null) {
-            val accFrom = userService.getAccount(user, request.getForm());
-            val accTo = userService.getAccount(user, request.getTo());
-            if(accFrom.isPresent() && accTo.isPresent()) {
-                transferService.transfer(accFrom.get(), accTo.get(), request.getSum());
-            }
-        }
+        taskService.transferTask(request, userId);
     }
 }

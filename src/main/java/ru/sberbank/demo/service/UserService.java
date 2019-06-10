@@ -26,7 +26,7 @@ public class UserService {
     public User login(Long userId, String password) {
         try {
             return userRepository.findById(userId)
-                    .filter(user -> user.getPassword().equals(DigestUtils.md5Digest(password.getBytes())))
+                    .filter(user -> user.getPassword().equals(DigestUtils.md5DigestAsHex(password.getBytes())))
                     .orElseThrow(() -> new LoginException());
         } catch (LoginException e) {
             log.error(e.getMessage());

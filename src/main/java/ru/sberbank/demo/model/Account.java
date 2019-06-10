@@ -1,9 +1,6 @@
 package ru.sberbank.demo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.sberbank.demo.error.InsufficientFunds;
 import ru.sberbank.demo.error.NegativeSum;
 
@@ -32,6 +29,7 @@ public class Account {
     private AccountType type;
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID")
+    @EqualsAndHashCode.Exclude
     private User user;
 
     public BigDecimal transferTo(BigDecimal sum) throws NegativeSum {
