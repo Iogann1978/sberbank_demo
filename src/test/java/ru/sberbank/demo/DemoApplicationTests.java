@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +30,7 @@ import ru.sberbank.demo.service.UserService;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -151,7 +153,7 @@ public class DemoApplicationTests {
         val accountRequestTo = AccountRequest.builder()
                 .name("Credit Account User 1")
                 .number(accNumberTo)
-                .type(AccountType.Debit)
+                .type(AccountType.Credit)
                 .amount(BigDecimal.ZERO)
                 .password(password)
                 .build();
@@ -173,5 +175,14 @@ public class DemoApplicationTests {
         val transferResponse = restTemplate.exchange("http://localhost:8080/transfer/action/" + user.getId(), HttpMethod.POST, httpTransferRequest, String.class);
         assertNotNull(transferResponse);
         assertEquals(HttpStatus.OK, transferResponse.getStatusCode());
+
+        val httpAccountsRequest = new HttpEntity<>(password, headers);
+        val accountsResponse = restTemplate.exchange("http://localhost:8080/user/accounts/" + user.getId(), HttpMethod.GET, httpAccountsRequest,
+                new ParameterizedTypeReference<Set<Account>>(){});
+        assertNotNull(accountsResponse);
+        assertEquals(HttpStatus.OK, accountsResponse.getStatusCode());
+        assertTrue(accountsResponse.hasBody());
+        assertNotNull(accountsResponse.getBody());
+        log.info("accounts: {}", accountsResponse.getBody());
     }
 }

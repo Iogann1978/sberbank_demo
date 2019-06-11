@@ -8,7 +8,7 @@ import ru.sberbank.demo.model.request.AccountRequest;
 import ru.sberbank.demo.model.request.UserRequest;
 import ru.sberbank.demo.service.UserService;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/accounts/{userId}")
-    public List<Account> getAccounts(@RequestBody String password, @PathVariable("userId") Long userId) {
+    public Set<Account> getAccounts(@RequestBody String password, @PathVariable("userId") Long userId) {
         return userService.getAccounts(password, userId);
     }
 }

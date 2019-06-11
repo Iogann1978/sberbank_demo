@@ -15,8 +15,8 @@ import ru.sberbank.demo.model.request.UserRequest;
 import ru.sberbank.demo.repository.AccountRepository;
 import ru.sberbank.demo.repository.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -73,12 +73,16 @@ public class UserService {
     }
 
     @Async("taskExecutor")
-    public List<Account> getAccounts(String password, Long userId) {
-        val user = userService.login(userId, password);
+    public Set<Account> getAccounts(String password, Long userId) {
+        val user = login(userId, password);
         if(user != null) {
-            return transferService.getDocuments(request.getStart(), request.getEnd(), user);
+            val u = userRepository.findById(userId);
+            if(u.isPresent()) {
+                return u.get().getAccounts();
+            }
         } else {
             return null;
         }
+        return null;
     }
 }
