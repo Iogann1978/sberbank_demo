@@ -65,6 +65,7 @@ public class UserService {
                     .number(request.getNumber())
                     .amount(request.getAmount())
                     .type(request.getType())
+                    .user(user)
                     .build();
             return accountRepository.save(account);
         } else {
@@ -73,16 +74,7 @@ public class UserService {
     }
 
     @Async("taskExecutor")
-    public Set<Account> getAccounts(String password, Long userId) {
-        val user = login(userId, password);
-        if(user != null) {
-            val u = userRepository.findById(userId);
-            if(u.isPresent()) {
-                return u.get().getAccounts();
-            }
-        } else {
-            return null;
-        }
-        return null;
+    public User getUser(String password, Long userId) {
+        return login(userId, password);
     }
 }

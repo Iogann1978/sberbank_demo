@@ -20,6 +20,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/{userId}")
+    public User getUser(@RequestBody String password, @PathVariable("userId") Long userId) {
+        return userService.getUser(password, userId);
+    }
+
     @PostMapping("/add")
     public User registerUser(@RequestBody UserRequest request) {
         return userService.registerUser(request);
@@ -28,10 +33,5 @@ public class UserController {
     @PostMapping("/account/add/{userId}")
     public Account registerAccount(@RequestBody AccountRequest request, @PathVariable("userId") Long userId) {
         return userService.registerAccount(request, userId);
-    }
-
-    @GetMapping("/accounts/{userId}")
-    public Set<Account> getAccounts(@RequestBody String password, @PathVariable("userId") Long userId) {
-        return userService.getAccounts(password, userId);
     }
 }

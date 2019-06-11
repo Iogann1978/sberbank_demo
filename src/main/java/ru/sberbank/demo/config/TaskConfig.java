@@ -16,7 +16,7 @@ public class TaskConfig {
     @Bean(name="taskExecutor")
     public TaskExecutor htmlExecutor() {
         val taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setThreadNamePrefix("html-");
+        taskExecutor.setThreadNamePrefix("task-");
         taskExecutor.setCorePoolSize(10);
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(10);
