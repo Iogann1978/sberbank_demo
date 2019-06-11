@@ -9,10 +9,13 @@ import ru.sberbank.demo.error.InsufficientFunds;
 import ru.sberbank.demo.error.NegativeSum;
 import ru.sberbank.demo.model.Account;
 import ru.sberbank.demo.model.Document;
+import ru.sberbank.demo.model.User;
 import ru.sberbank.demo.repository.AccountRepository;
 import ru.sberbank.demo.repository.DocumentRepository;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -36,9 +39,13 @@ public class TransferService {
                 .build();
         a.transferFrom(sum);
         b.transferTo(sum);
-        val as = accountRepository.save(a);
-        val bs = accountRepository.save(b);
-        log.info("as: {}, bs: {}", as.getId(), bs.getId());
+        accountRepository.save(a);
+        accountRepository.save(b);
         documentRepository.save(doc);
+    }
+
+    @Transactional
+    public List<Document> getDocuments(Date start, Date end, User user) {
+        return documentRepository.getDocumentsBetween(start, end, user);
     }
 }

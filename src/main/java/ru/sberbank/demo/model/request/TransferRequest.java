@@ -1,4 +1,4 @@
-package ru.sberbank.demo.model;
+package ru.sberbank.demo.model.request;
 
 import lombok.Builder;
 import lombok.Data;
