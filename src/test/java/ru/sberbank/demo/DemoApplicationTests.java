@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
@@ -22,17 +21,11 @@ import ru.sberbank.demo.model.request.DocumentsRequest;
 import ru.sberbank.demo.model.request.TransferRequest;
 import ru.sberbank.demo.model.User;
 import ru.sberbank.demo.model.request.UserRequest;
-import ru.sberbank.demo.repository.AccountRepository;
-import ru.sberbank.demo.repository.UserRepository;
-import ru.sberbank.demo.service.TaskService;
-import ru.sberbank.demo.service.UserService;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -103,17 +96,19 @@ public class DemoApplicationTests {
         assertNotNull(accToResponse.getBody());
         log.info("accountTo: {}", accToResponse.getBody());
 
-        val transferRequest = TransferRequest.builder()
-                .form(accNumberFrom)
-                .to(accNumberTo)
-                .sum(new BigDecimal(500.0))
-                .password(password)
-                .build();
-        val httpTransferRequest = new HttpEntity<>(transferRequest, headers);
-        val transferResponse = restTemplate.exchange("http://localhost:" + port + "/transfer/action/" + user.getId(),
-                HttpMethod.POST, httpTransferRequest, String.class);
-        assertNotNull(transferResponse);
-        assertEquals(HttpStatus.OK, transferResponse.getStatusCode());
+        for(int i = 0; i < 3; i++) {
+            val transferRequest = TransferRequest.builder()
+                    .form(accNumberFrom)
+                    .to(accNumberTo)
+                    .sum(new BigDecimal(500.0))
+                    .password(password)
+                    .build();
+            val httpTransferRequest = new HttpEntity<>(transferRequest, headers);
+            val transferResponse = restTemplate.exchange("http://localhost:" + port + "/transfer/action/" + user.getId(),
+                    HttpMethod.POST, httpTransferRequest, String.class);
+            assertNotNull(transferResponse);
+            assertEquals(HttpStatus.OK, transferResponse.getStatusCode());
+        }
 
         try {
             TimeUnit.SECONDS.sleep(3L);
