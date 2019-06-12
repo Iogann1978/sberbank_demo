@@ -12,6 +12,7 @@ import ru.sberbank.demo.model.Document;
 import ru.sberbank.demo.model.User;
 import ru.sberbank.demo.repository.AccountRepository;
 import ru.sberbank.demo.repository.DocumentRepository;
+import ru.sberbank.demo.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,18 +25,19 @@ public class TransferService {
     private AccountRepository accountRepository;
 
     @Autowired
-    public TransferService(AccountRepository accountRepository, DocumentRepository documentRepository) {
+    public TransferService(AccountRepository accountRepository,
+                           DocumentRepository documentRepository) {
         this.accountRepository = accountRepository;
         this.documentRepository = documentRepository;
     }
 
     @Transactional(rollbackFor = {InsufficientFunds.class, NegativeSum.class})
-    public void transfer(Account a, Account b, BigDecimal sum) throws InsufficientFunds, NegativeSum {
+    public void transfer(User user, Account a, Account b, BigDecimal sum) throws InsufficientFunds, NegativeSum {
         val doc = Document.builder()
                 .from(a)
                 .to(b)
                 .sum(sum)
-                .user(a.getUser())
+                .user(user)
                 .build();
         a.transferFrom(sum);
         b.transferTo(sum);

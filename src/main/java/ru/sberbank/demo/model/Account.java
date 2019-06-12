@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Slf4j
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,19 +38,15 @@ public class Account {
 
     public synchronized void transferTo(BigDecimal sum) throws NegativeSum {
         checkSum(sum);
-        log.info("add amount: {}, sum: {}", amount, sum);
         amount = amount.add(sum);
-        log.info("add amount: {}", amount);
     }
 
     public synchronized void transferFrom(BigDecimal sum) throws InsufficientFunds, NegativeSum {
         checkSum(sum);
-        log.info("subtract amount: {}, sum: {}", amount, sum);
         if(amount.compareTo(sum) == -1) {
             throw new InsufficientFunds();
         }
         amount = amount.subtract(sum);
-        log.info("subtract amount: {}", amount);
     }
 
     private static void checkSum(BigDecimal sum) throws NegativeSum {

@@ -73,7 +73,6 @@ public class UserService {
         }
     }
 
-    @Async("taskExecutor")
     public User getUser(String password, Long userId) {
         return login(userId, password);
     }

@@ -28,6 +28,7 @@ import ru.sberbank.demo.service.UserService;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -178,6 +179,12 @@ public class DemoApplicationTests {
         assertNotNull(transferResponse);
         assertEquals(HttpStatus.OK, transferResponse.getStatusCode());
 
+        try {
+            TimeUnit.SECONDS.sleep(3L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         val httpAccountsRequest = new HttpEntity<>(password, headers);
         val accountsResponse = restTemplate.exchange("http://localhost:" + port + "/user/" + user.getId(),
                 HttpMethod.POST, httpAccountsRequest, User.class);
@@ -185,6 +192,7 @@ public class DemoApplicationTests {
         assertEquals(HttpStatus.OK, accountsResponse.getStatusCode());
         assertTrue(accountsResponse.hasBody());
         assertNotNull(accountsResponse.getBody());
-        accountsResponse.getBody().getAccounts().stream().forEach(account -> log.info("account: {}", account));
+        accountsResponse.getBody().getAccounts().stream().
+                forEach(account -> log.info("account: {} {}", account.getNumber(), account.getAmount()));
     }
 }

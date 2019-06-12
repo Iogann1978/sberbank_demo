@@ -31,7 +31,7 @@ public class TaskService {
             val accFrom = userService.getAccount(user, request.getForm());
             val accTo = userService.getAccount(user, request.getTo());
             if(accFrom.isPresent() && accTo.isPresent()) {
-                transferService.transfer(accFrom.get(), accTo.get(), request.getSum());
+                transferService.transfer(user, accFrom.get(), accTo.get(), request.getSum());
             }
         }
     }
