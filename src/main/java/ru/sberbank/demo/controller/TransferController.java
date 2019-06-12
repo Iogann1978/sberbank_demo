@@ -1,10 +1,11 @@
 package ru.sberbank.demo.controller;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.sberbank.demo.model.Account;
 import ru.sberbank.demo.model.Document;
-import ru.sberbank.demo.model.request.DocumentRequest;
+import ru.sberbank.demo.model.request.DocumentsRequest;
 import ru.sberbank.demo.model.request.TransferRequest;
 import ru.sberbank.demo.service.TaskService;
 
@@ -25,8 +26,9 @@ public class TransferController {
         taskService.transferTask(request, userId);
     }
 
-    @GetMapping("/documents/{userId}")
-    public List<Document> getDocuments(@RequestBody DocumentRequest request, @PathVariable("userId") Long userId) {
-        return taskService.getDocuments(request, userId);
+    @SneakyThrows
+    @PostMapping("/documents/{userId}")
+    public List<Document> getDocuments(@RequestBody DocumentsRequest request, @PathVariable("userId") Long userId) {
+        return taskService.getDocuments(request, userId).get();
     }
 }

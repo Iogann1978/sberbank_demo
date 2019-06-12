@@ -16,7 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import ru.sberbank.demo.model.Account;
 import ru.sberbank.demo.model.AccountType;
+import ru.sberbank.demo.model.Document;
 import ru.sberbank.demo.model.request.AccountRequest;
+import ru.sberbank.demo.model.request.DocumentsRequest;
 import ru.sberbank.demo.model.request.TransferRequest;
 import ru.sberbank.demo.model.User;
 import ru.sberbank.demo.model.request.UserRequest;
@@ -27,6 +29,9 @@ import ru.sberbank.demo.service.UserService;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -38,81 +43,12 @@ import static org.junit.Assert.*;
 @PropertySource("classpath:application-test.yaml")
 @Slf4j
 public class DemoApplicationTests {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TaskService taskService;
     @LocalServerPort
     private int port;
 
     private static final String accNumberFrom = "40817810000000000001", accNumberTo = "40817810000000000002";
     private static final String password = "12345";
     private RestTemplate restTemplate = new RestTemplate();
-
-    /*
-    @Test
-    @Order(1)
-    public void testUser() {
-        val accounts = new HashSet<Account>(){
-            {
-                add(Account.builder()
-                        .name("First account")
-                        .type(AccountType.Current)
-                        .number(accNumberFrom)
-                        .amount(new BigDecimal(1000.0))
-                        .build());
-                add(Account.builder()
-                        .name("Second account")
-                        .type(AccountType.Current)
-                        .number(accNumberTo)
-                        .amount(BigDecimal.ZERO)
-                        .build());
-            }
-        };
-        val user = User.builder()
-                .firstName("User 1")
-                .accounts(accounts)
-                .password(DigestUtils.md5DigestAsHex("12345".getBytes()))
-                .build();
-        val testUser = userRepository.save(user);
-        accounts.stream().forEach(account -> account.setUser(testUser));
-        accountRepository.saveAll(accounts);
-
-        assertNotNull(testUser);
-        assertNotNull(testUser.getId());
-        val request = TransferRequest.builder()
-                .form(accNumberFrom)
-                .to(accNumberTo)
-                .sum(new BigDecimal(500.0))
-                .password("12345")
-                .build();
-        taskService.transferTask(request, testUser.getId());
-        //taskService.transferTask(request, testUser.getId());
-        //taskService.transferTask(request, testUser.getId());
-        try {
-            TimeUnit.SECONDS.sleep(3L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Test
-    @Order(2)
-    @Transactional
-    public void print() {
-        val testAccountFrom = accountRepository.findAccountByNumber(accNumberFrom);
-        val testAccountTo = accountRepository.findAccountByNumber(accNumberTo);
-        assertTrue(testAccountFrom.isPresent());
-        assertTrue(testAccountTo.isPresent());
-        log.info("from: {} {}", testAccountFrom.get().getId(), testAccountFrom.get().getAmount());
-        log.info("to: {} {}", testAccountTo.get().getId(), testAccountTo.get().getAmount());
-    }
-     */
 
     @Test
     public void testRegister() {
@@ -194,5 +130,22 @@ public class DemoApplicationTests {
         assertNotNull(accountsResponse.getBody());
         accountsResponse.getBody().getAccounts().stream().
                 forEach(account -> log.info("account: {} {}", account.getNumber(), account.getAmount()));
+
+        val documentsRequest = DocumentsRequest.builder()
+                .start(LocalDateTime.now().minusDays(1))
+                .end(LocalDateTime.now().plusDays(1))
+                .password(password)
+                .build();
+        val httpDocumentsRequest = new HttpEntity<>(documentsRequest, headers);
+        val documentsResponse = restTemplate.exchange("http://localhost:" + port + "/transfer/documents/" + user.getId(),
+                HttpMethod.POST, httpDocumentsRequest, new ParameterizedTypeReference<List<Document>>(){});
+        assertNotNull(documentsResponse);
+        assertEquals(HttpStatus.OK, documentsResponse.getStatusCode());
+        assertTrue(documentsResponse.hasBody());
+        assertNotNull(documentsResponse.getBody());
+        val documents = documentsResponse.getBody();
+        documents.stream().forEach(document -> log.info("document: {} {} {} {}",
+                document.getTimestamp(), document.getFrom().getNumber(), document.getTo().getNumber(),
+                document.getSum()));
     }
 }

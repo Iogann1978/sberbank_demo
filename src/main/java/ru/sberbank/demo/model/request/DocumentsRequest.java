@@ -3,11 +3,12 @@ package ru.sberbank.demo.model.request;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @Builder
-public class DocumentRequest {
+public class DocumentsRequest {
     private String password;
-    private Date start, end;
+    private LocalDateTime start, end;
 }

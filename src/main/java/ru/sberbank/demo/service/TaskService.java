@@ -7,10 +7,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.sberbank.demo.model.Account;
 import ru.sberbank.demo.model.Document;
-import ru.sberbank.demo.model.request.DocumentRequest;
+import ru.sberbank.demo.model.request.DocumentsRequest;
 import ru.sberbank.demo.model.request.TransferRequest;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TaskService {
@@ -37,10 +38,11 @@ public class TaskService {
     }
 
     @Async("taskExecutor")
-    public List<Document> getDocuments(DocumentRequest request, Long userId) {
+    public CompletableFuture<List<Document>> getDocuments(DocumentsRequest request, Long userId) {
         val user = userService.login(userId, request.getPassword());
         if(user != null) {
-            return transferService.getDocuments(request.getStart(), request.getEnd(), user);
+            val documents = transferService.getDocuments(request.getStart(), request.getEnd(), user);
+            return CompletableFuture.completedFuture(documents);
         } else {
             return null;
         }

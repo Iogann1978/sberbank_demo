@@ -15,6 +15,8 @@ import ru.sberbank.demo.repository.DocumentRepository;
 import ru.sberbank.demo.repository.UserRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +49,8 @@ public class TransferService {
     }
 
     @Transactional
-    public List<Document> getDocuments(Date start, Date end, User user) {
-        return documentRepository.getDocumentsBetween(start, end, user);
+    public List<Document> getDocuments(LocalDateTime start, LocalDateTime end, User user) {
+        return documentRepository.getDocumentsBetween(Date.from(start.atZone(ZoneId.systemDefault()).toInstant()),
+                Date.from(end.atZone(ZoneId.systemDefault()).toInstant()), user);
     }
 }
