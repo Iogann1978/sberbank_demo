@@ -180,7 +180,7 @@ public class DemoApplicationTests {
 
         val httpAccountsRequest = new HttpEntity<>(password, headers);
         val accountsResponse = restTemplate.exchange("http://localhost:" + port + "/user/" + user.getId(),
-                HttpMethod.GET, httpAccountsRequest, User.class);
+                HttpMethod.POST, httpAccountsRequest, User.class);
         assertNotNull(accountsResponse);
         assertEquals(HttpStatus.OK, accountsResponse.getStatusCode());
         assertTrue(accountsResponse.hasBody());

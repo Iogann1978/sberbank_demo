@@ -1,5 +1,7 @@
 package ru.sberbank.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ public class User {
     private String lastName;
     @NotNull
     private String password;
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     private Set<Account> accounts = new HashSet<>();

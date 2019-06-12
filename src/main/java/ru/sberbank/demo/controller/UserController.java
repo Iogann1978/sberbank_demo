@@ -20,7 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{userId}")
+    @PostMapping("/{userId}")
     public User getUser(@RequestBody String password, @PathVariable("userId") Long userId) {
         return userService.getUser(password, userId);
     }
