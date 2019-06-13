@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+    // Выборка документов по пользователю за период дат
     @Query("SELECT d FROM Document d WHERE d.timestamp >= ?1 AND d.timestamp <= ?2 AND d.user = ?3")
     List<Document> getDocumentsBetween(Date start, Date end, User user);
 }

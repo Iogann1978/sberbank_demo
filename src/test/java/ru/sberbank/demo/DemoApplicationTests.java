@@ -45,6 +45,7 @@ public class DemoApplicationTests {
 
     @Test
     public void testRegister() {
+        // Создаем пользователя в базе
         val userRequest = UserRequest.builder()
                 .firstName("User 1")
                 .password(password)
@@ -64,6 +65,7 @@ public class DemoApplicationTests {
         val user = userResponse.getBody();
         log.info("user: {}", user);
 
+        // Добавляем пользователю два счета
         val accountRequestFrom = AccountRequest.builder()
                 .name("Debit Account User 1")
                 .number(accNumberFrom)
@@ -96,7 +98,9 @@ public class DemoApplicationTests {
         assertNotNull(accToResponse.getBody());
         log.info("accountTo: {}", accToResponse.getBody());
 
+        // Цикл совершения транзакций
         for(int i = 0; i < 3; i++) {
+            // Переводим деньги между счетами
             val transferRequest = TransferRequest.builder()
                     .form(accNumberFrom)
                     .to(accNumberTo)
@@ -110,12 +114,14 @@ public class DemoApplicationTests {
             assertEquals(HttpStatus.OK, transferResponse.getStatusCode());
         }
 
+        // Ждем
         try {
             TimeUnit.SECONDS.sleep(3L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        // Получаем информацию о счетах пользователя
         val httpAccountsRequest = new HttpEntity<>(password, headers);
         val accountsResponse = restTemplate.exchange("http://localhost:" + port + "/user/" + user.getId(),
                 HttpMethod.POST, httpAccountsRequest, User.class);
@@ -126,6 +132,7 @@ public class DemoApplicationTests {
         accountsResponse.getBody().getAccounts().stream().
                 forEach(account -> log.info("account: {} {}", account.getNumber(), account.getAmount()));
 
+        // Получаем список документов по пользователю
         val documentsRequest = DocumentsRequest.builder()
                 .start(LocalDateTime.now().minusDays(1))
                 .end(LocalDateTime.now().plusDays(1))

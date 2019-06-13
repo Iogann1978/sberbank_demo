@@ -6,6 +6,9 @@ import ru.sberbank.demo.model.AccountType;
 
 import java.math.BigDecimal;
 
+/**
+ * Класс REST-запроса для добавления счета
+ */
 @Data
 @Builder
 public class AccountRequest {

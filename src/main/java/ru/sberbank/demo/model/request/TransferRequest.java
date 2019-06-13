@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * Класс REST-запроса для проведения перевода
+ */
 @Data
 @Builder
 public class TransferRequest {

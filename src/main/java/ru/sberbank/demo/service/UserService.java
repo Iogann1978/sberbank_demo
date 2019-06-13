@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import ru.sberbank.demo.error.LoginException;
@@ -16,8 +15,10 @@ import ru.sberbank.demo.repository.AccountRepository;
 import ru.sberbank.demo.repository.UserRepository;
 
 import java.util.Optional;
-import java.util.Set;
 
+/**
+ * Сервис работы со счетами и пользователями
+ */
 @Service
 @Slf4j
 public class UserService {
@@ -30,6 +31,7 @@ public class UserService {
         this.accountRepository = accountRepository;
     }
 
+    // Вход пользователя по паролю
     @Cacheable("login")
     public User login(Long userId, String password) {
         try {
@@ -43,11 +45,13 @@ public class UserService {
         }
     }
 
+    // Получение счетов пользователя
     @Cacheable("accounts")
     public Optional<Account> getAccount(User user, String number) {
         return user.getAccounts().stream().filter(account -> account.getNumber().equals(number)).findFirst();
     }
 
+    // Регистрация нового пользователя
     public User registerUser(UserRequest request) {
         val user = User.builder()
                 .firstName(request.getFirstName())
@@ -57,6 +61,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Регистрация нового счета пользователя
     public Account registerAccount(AccountRequest request, Long userId) {
         val user = login(userId, request.getPassword());
         if(user != null) {
@@ -73,6 +78,7 @@ public class UserService {
         }
     }
 
+    // Получение пользователя из базы
     public User getUser(String password, Long userId) {
         return login(userId, password);
     }

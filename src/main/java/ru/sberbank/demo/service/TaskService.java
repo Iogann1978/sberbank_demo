@@ -5,7 +5,6 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import ru.sberbank.demo.model.Account;
 import ru.sberbank.demo.model.Document;
 import ru.sberbank.demo.model.request.DocumentsRequest;
 import ru.sberbank.demo.model.request.TransferRequest;
@@ -13,6 +12,9 @@ import ru.sberbank.demo.model.request.TransferRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Сервис переводов и документов
+ */
 @Service
 public class TaskService {
     private TransferService transferService;
@@ -24,6 +26,7 @@ public class TaskService {
         this.userService = userService;
     }
 
+    // Процедура совершения проводки
     @SneakyThrows
     @Async("taskExecutor")
     public void transferTask(TransferRequest request, Long userId) {
@@ -37,6 +40,7 @@ public class TaskService {
         }
     }
 
+    // Процедура получения списка документов по пользователю за период дат
     @Async("taskExecutor")
     public CompletableFuture<List<Document>> getDocuments(DocumentsRequest request, Long userId) {
         val user = userService.login(userId, request.getPassword());

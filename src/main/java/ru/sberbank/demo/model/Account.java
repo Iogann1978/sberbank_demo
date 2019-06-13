@@ -14,6 +14,9 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
+/**
+ * Класс счета
+ */
 @Entity
 @Data
 @NoArgsConstructor

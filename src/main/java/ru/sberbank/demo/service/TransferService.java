@@ -12,7 +12,6 @@ import ru.sberbank.demo.model.Document;
 import ru.sberbank.demo.model.User;
 import ru.sberbank.demo.repository.AccountRepository;
 import ru.sberbank.demo.repository.DocumentRepository;
-import ru.sberbank.demo.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,6 +32,7 @@ public class TransferService {
         this.documentRepository = documentRepository;
     }
 
+    // Транзакция проводки
     @Transactional(rollbackFor = {InsufficientFunds.class, NegativeSum.class})
     public void transfer(User user, Account a, Account b, BigDecimal sum) throws InsufficientFunds, NegativeSum {
         val doc = Document.builder()
@@ -48,7 +48,8 @@ public class TransferService {
         documentRepository.save(doc);
     }
 
-    @Transactional
+    // Транзакция выборки документов
+    @Transactional(readOnly = true)
     public List<Document> getDocuments(LocalDateTime start, LocalDateTime end, User user) {
         return documentRepository.getDocumentsBetween(Date.from(start.atZone(ZoneId.systemDefault()).toInstant()),
                 Date.from(end.atZone(ZoneId.systemDefault()).toInstant()), user);
